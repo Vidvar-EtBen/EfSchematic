@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+
 using DataAccess;
 using DataAccess.Repositories;
+using DataAccess.RepositoryInterfaces;
 
 using Entities;
 using Entities.Context;
@@ -28,10 +30,12 @@ namespace Api
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddDbContext<DbContext, DbContext>(options =>
+            builder.Services.AddDbContext<DbContext, ExampleContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString(ConnectionName));
             });
+
+            
 
             builder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();
             builder.Services.AddScoped<UnitOfWork>();
