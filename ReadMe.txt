@@ -1,98 +1,130 @@
-<---------------------->
-<-- IMPORTANT NOTICE -->
-<---------------------->
+# 🚀 .NET 9 API Template with EF Core & Repository Pattern
 
-All "Example" files in this project are temporary/small guides intended for you to change, replace, or use as a starting point for your own implementation. 
-Please update or remove them as needed for your solution.
+**A robust starting template for building a Web API using .NET 9, Entity Framework Core (EF Core), and SQL Server. This project features a Generic Repository and Unit of Work implementation for clean data access.**
 
-<-------------------->
-<-- NuGet Packages -->
-<-------------------->
+---
 
-<-- Api -->
-Microsoft.EntityFrameworkCore.SqlServer
-Microsoft.EntityFrameworkCore.Tools
-Swashbuckle.AspNetCore
+## ⚠️ Important Notice: Example Files
 
-<-- DataAccess -->
-Microsoft.EntityFrameworkCore.SqlServer
-Microsoft.EntityFrameworkCore.Tools
+All files labeled as "**Example**" (e.g., `ExampleController.cs`, `IExampleRepository.cs`) are small guides intended for you to **change, replace, or use as a starting point** for your own implementation.
 
-<-- Entites -->
-Microsoft.EntityFrameworkCore.SqlServer
-Microsoft.EntityFrameworkCore.Tools
+**Please update or remove them as needed for your specific solution.**
 
-<--------------------------->
-<-- create classes for Ef -->
-<--------------------------->
+---
 
-<-- Remove example files if not alredy done -->
+## 📦 NuGet Packages
 
-/ Open Package Manager Console \
-Tools > NuGet Package Manager > Package Manager Console
+This project utilizes the following key NuGet packages across its three layers:
 
-/ Find Connection string \
-View > SQL Server ObjectExplorer > Desired db > Properties > Connection string
+| Project | Key Packages | Purpose |
+| :--- | :--- | :--- |
+| **Api** | `Microsoft.EntityFrameworkCore.SqlServer`<br>`Swashbuckle.AspNetCore` | Web API logic, configuration, and API documentation (Swagger/OpenAPI). |
+| **DataAccess** | `Microsoft.EntityFrameworkCore.SqlServer`<br>`Microsoft.EntityFrameworkCore.Tools` | Data access layer (Repositories, Unit of Work) and EF Core setup. |
+| **Entities** | `Microsoft.EntityFrameworkCore.SqlServer`<br>`Microsoft.EntityFrameworkCore.Tools` | Data model/POCO classes for the database entities. |
 
-<-- change "connection string" & "dbNameContext" -->
+---
 
-/ Copy/Paste to Package Manager Console and run with correct connection string and db Context name \
-Scaffold-DbContext " connection string "
-Microsoft.EntityFrameworkCore.SqlServer -Context dbNameContext -
-Project Entities -StartupProject Api
+## ⚙️ API Setup & Running Instructions
 
-<-- Move "dbNameContext" to Context folder -->
+### Prerequisites
 
-<---------------------------->
-<-- Api Setup Instructions -->
-<---------------------------->
+* **[.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)** installed.
+* A running **SQL Server** instance.
+* **Restore NuGet packages** for all projects in the solution.
 
-/ Prerequisites \
-- Ensure .NET9 SDK is installed
-- Restore NuGet packages for all projects
+### Configuration
 
-/ Configuration \
-- Update the connection string in appsettings.json (Api project) with your SQL Server details
-- Ensure the connection string name matches "ExampleConnection" in Program.cs
+1.  Open `appsettings.json` in the **`Api`** project.
+2.  Update the `ConnectionStrings` section with your SQL Server details.
+    > 💡 **Note:** The connection string key **must** be named `"ExampleConnection"` as referenced in `Api/Program.cs`.
 
-/ Build & Run \
-- Set Api as the startup project
-- Build the solution
-- Run the Api project
+### Build & Run
 
-/ Accessing the API \
-- API endpoints are available at: https://localhost:{port}/api/example
-- Swagger UI is available at: https://localhost:{port}/swagger (development only)
+1.  Set the **`Api`** project as the **Startup Project**.
+2.  Build the solution.
+3.  Run the **`Api`** project (e.g., press **F5** in Visual Studio).
 
-/ Example Usage \
-- GET /api/example: Returns all Example entities
+### Accessing the API
 
-/ Troubleshooting \
-- If you encounter database errors, verify your connection string and database accessibility
-- Ensure Entity Framework migrations are applied if needed
+| Feature | URL (Development) | Notes |
+| :--- | :--- | :--- |
+| **API Endpoints** | `https://localhost:{port}/api/example` | Replace `{port}` with your assigned port number. |
+| **Swagger UI** | `https://localhost:{port}/swagger` | Interactive documentation for testing endpoints. (Development only) |
 
-/ For more details, see Program.cs and ExampleController.cs \
+**Example Usage:** `GET /api/example` returns all `Example` entities.
 
-<------------------------------->
-<-- Creating New Repositories -->
-<------------------------------->	
+---
 
-/ Steps to create a new repository for an entity \
-1. Create a repository interface in DataAccess/RepositoryInterfaces:
- - Example: IYourEntityRepository.cs
- - Inherit from IGenericRepository<YourEntity>
- - Add custom query methods if needed
+## 🛠️ Entity Framework Core (EF Core) Setup
 
-2. Create a repository implementation in DataAccess/Repositories:
- - Example: YourEntityRepository.cs
- - Inherit from GenericRepository<YourEntity> and implement your interface
- - Inject DbContext via constructor
+Use these steps to scaffold (`Scaffold-DbContext`) your `DbContext` and model classes from an existing database using the Package Manager Console (PMC).
 
-3. Register your repository in Api/Program.cs:
- builder.Services.AddScoped<IYourEntityRepository, YourEntityRepository>();
- builder.Services.AddScoped<IGenericRepository<Entities.YourEntity>, YourEntityRepository>();
+1.  **Preparation:** Ensure you have **removed or replaced** the existing `Example` files/models if you haven't already.
 
-4. Use the repository via UnitOfWork in your controllers:
- IYourEntityRepository repo = (IYourEntityRepository)unitOfWork.GetRepository<YourEntity>();
+2.  **Open PMC:** Go to **Tools** > **NuGet Package Manager** > **Package Manager Console**.
 
-/ See IExampleRepository.cs and ExampleRepository.cs for reference implementations \
+3.  **Get Connection String:** Locate the exact connection string for your database (e.g., via **SQL Server Object Explorer**).
+
+4.  **Scaffold `DbContext` and Models:**
+    **Ensure you replace `"your connection string"` and `YourDbNameContext` with your actual values before running.**
+
+    ```powershell
+    Scaffold-DbContext "your connection string" Microsoft.EntityFrameworkCore.SqlServer -Context YourDbNameContext -Project Entities -StartupProject Api
+    ```
+
+5.  **Relocate `DbContext`:**
+    * Move the newly created `YourDbNameContext.cs` file from the root of the `Entities` project into the **`DataAccess/Context`** folder.
+
+---
+
+## 🏗️ Creating New Repositories
+
+The project uses a **Generic Repository** and **Unit of Work** pattern. Follow these steps to create a specific repository for a new entity (`YourEntity`):
+
+### 1. Create Repository Interface
+
+* **Location:** `DataAccess/RepositoryInterfaces/`
+* **Inherit from `IGenericRepository<YourEntity>`** and add any custom query methods specific to your entity.
+    ```csharp
+    // Example: IYourEntityRepository.cs
+    public interface IYourEntityRepository : IGenericRepository<YourEntity>
+    {
+        Task<List<YourEntity>> GetEntitiesByStatusAsync(string status);
+    }
+    ```
+
+### 2. Create Repository Implementation
+
+* **Location:** `DataAccess/Repositories/`
+* **Inherit from `GenericRepository<YourEntity>`** and implement your interface.
+    ```csharp
+    // Example: YourEntityRepository.cs
+    public class YourEntityRepository : GenericRepository<YourEntity>, IYourEntityRepository
+    {
+        public YourEntityRepository(YourDbContext context) : base(context)
+        {
+        }
+        // Implement custom methods here
+    }
+    ```
+
+### 3. Register the Repository in Dependency Injection (DI)
+
+* **Location:** `Api/Program.cs`
+* Add the following lines to register your repository services:
+    ```csharp
+    // Register the specific repository interface
+    builder.Services.AddScoped<IYourEntityRepository, YourEntityRepository>();
+
+    // Register the generic repository for this entity (used by UnitOfWork)
+    builder.Services.AddScoped<IGenericRepository<Entities.YourEntity>, YourEntityRepository>();
+    ```
+
+### 4. Use the Repository via UnitOfWork
+
+In your controllers or services, inject and use the `IUnitOfWork` to access the repository:
+
+```csharp
+// Example: Getting the specific repository instance from UnitOfWork
+IYourEntityRepository repo = (IYourEntityRepository)unitOfWork.GetRepository<YourEntity>();
+var data = await repo.GetEntitiesByStatusAsync("Active");
