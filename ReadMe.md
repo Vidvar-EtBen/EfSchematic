@@ -19,7 +19,7 @@ This project utilizes the following key NuGet packages across its three layers:
 | Project | Key Packages | Purpose |
 | :--- | :--- | :--- |
 | **Api** | `Microsoft.EntityFrameworkCore.SqlServer`<br>`Swashbuckle.AspNetCore` | Web API logic, configuration, and API documentation (Swagger/OpenAPI). |
-| **DataAccess** | `Microsoft.EntityFrameworkCore.SqlServer`<br>`Microsoft.EntityFrameworkCore.Tools` | Data access layer (Repositories, Unit of Work) and EF Core setup. |
+| **DataAccess** | `EtBen.DataAccess.EF.Sql` | Data access layer (Repositories, Unit of Work) and EF Core setup. |
 | **Entities** | `Microsoft.EntityFrameworkCore.SqlServer`<br>`Microsoft.EntityFrameworkCore.Tools` | Data model/POCO classes for the database entities. |
 
 ---
